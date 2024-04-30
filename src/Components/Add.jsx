@@ -21,6 +21,7 @@ function Add({setAddVideoResponse}) {
           let videoId = link.split("v=")[1].slice(0,11)
           console.log(videoId);
           setVideoDetails({...videoDetails,youTubeUrl:`https://www.youtube.com/embed/${videoId}`})
+          
           setInvalidYouTubeUrl(false)
         }else{
           setVideoDetails({...videoDetails,youTubeUrl:""})

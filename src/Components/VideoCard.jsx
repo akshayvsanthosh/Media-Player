@@ -1,17 +1,30 @@
 import React, { useState } from 'react'
 import { Card, Modal } from 'react-bootstrap'
-import { removeVideoAPI } from '../Services/allAPI';
+import { removeVideoAPI, saveHistoryAPI } from '../Services/allAPI';
 
 
 
-function VideoCard({displayData}) {
+function VideoCard({displayData,setDeleteResponse}) {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
-  const handleShow = () => setShow(true);
+  const handleShow = async () => { 
+    setShow(true);
+    const {caption,youTubeUrl} = displayData
+    const systemTime = new Date()
+    const formattedDate = systemTime.toLocaleString('en-US', {timeZoneName:"short"})
+    console.log(formattedDate);
+    const videoHistory = {caption,youTubeUrl,timeStamp:formattedDate}
+    try {
+      await saveHistoryAPI(videoHistory)
+    } catch (error) {
+      console.log(error);
+    }
+  }  
   const handleRemoveVideo = async (videoId)=>{
     try {
       const  result = await removeVideoAPI(videoId)
+      setDeleteResponse(result.data)
     } catch (error) {
       console.log(error);
     }
