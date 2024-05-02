@@ -4,7 +4,8 @@ import FloatingLabel from 'react-bootstrap/FloatingLabel';
 import Form from 'react-bootstrap/Form';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { addCategoryAPI, getCategoryAPI, removeCategoryAPI } from '../Services/allAPI';
+import VideoCard from './VideoCard'
+import { addCategoryAPI, getAVideoAPI, getCategoryAPI, removeCategoryAPI, updateCategoryAPI } from '../Services/allAPI';
 
 function Categories() {
   const [allCategories,setAllCategories] = useState([])
@@ -53,6 +54,27 @@ function Categories() {
     }
   }
 
+  const videoDropped = async (e,categoryId)=>{
+    const videoId = e.dataTransfer.getData("videoId")
+    console.log(`video id : ${videoId} dropped in category id: ${categoryId}`);
+    try {
+      const { data } = await getAVideoAPI(videoId)
+      console.log(data);
+      let selectedCategory = allCategories?.find(item=>item.id==categoryId)
+      selectedCategory.allVideos.push(data)
+      console.log(selectedCategory)
+      await updateCategoryAPI(categoryId,selectedCategory)
+      getAllCategory()
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  const dragOverCategory = (e)=>{
+    e.preventDefault()
+    console.log("Dragging over category");
+  }
+
   return (
     <div>
       <div className='d-flex justify-content-around '>
@@ -64,10 +86,20 @@ function Categories() {
         {
           allCategories.length>0?
           allCategories?.map(item=>(
-            <div key={item?.id} className='border rounded p-3 mb-2'>
+            <div droppable={true} onDragOver={e=>dragOverCategory(e)} onDrop={e=>videoDropped(e,item?.id)} key={item?.id} className='border rounded p-3 mb-2'>
               <div className='d-flex justify-content-between '>
                 <h5>{item?.categoryName}</h5>
                 <button onClick={()=>handleRemoveCategory(item?.id)} className='btn'><i className='fa-solid fa-trash text-danger'></i></button>
+              </div>
+              <div className='row mt-2'>
+                {
+                  item.allVideos?.length>0 &&
+                  item.allVideos?.map(video=>(
+                    <div key={video?.id} className='col-lg-6'>
+                      <VideoCard displayData={video}/>
+                    </div>
+                  ))
+                }
               </div>
             </div>
           ))
