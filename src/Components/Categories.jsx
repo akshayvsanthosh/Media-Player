@@ -5,9 +5,9 @@ import Form from 'react-bootstrap/Form';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import VideoCard from './VideoCard'
-import { addCategoryAPI, getAVideoAPI, getCategoryAPI, removeCategoryAPI, updateCategoryAPI } from '../Services/allAPI';
+import { addCategoryAPI, getAVideoAPI, getCategoryAPI, removeCategoryAPI, removeVideoAPI, updateCategoryAPI } from '../Services/allAPI';
 
-function Categories() {
+function Categories({setRemoveCategoryVideoResponse}) {
   const [allCategories,setAllCategories] = useState([])
   const [categoryName,SetCategoryName] = useState("")
 
@@ -35,6 +35,7 @@ function Categories() {
       // api call
       try {
         await addCategoryAPI({categoryName,allVideos:[]})
+        SetCategoryName()
         handleClose()
         getAllCategory()
       } catch (error) {
@@ -64,6 +65,8 @@ function Categories() {
       selectedCategory.allVideos.push(data)
       console.log(selectedCategory)
       await updateCategoryAPI(categoryId,selectedCategory)
+      const result = await removeVideoAPI(videoId)
+      setRemoveCategoryVideoResponse(result)
       getAllCategory()
     } catch (error) {
       console.log(error);
@@ -73,6 +76,12 @@ function Categories() {
   const dragOverCategory = (e)=>{
     e.preventDefault()
     console.log("Dragging over category");
+  }
+
+  const videoDragStarted = (e,videoDetails,categoryId)=>{
+    console.log(videoDetails,categoryId);
+    let dataShare = {categoryId,videoDetails}
+    e.dataTransfer.setData("dataShare",JSON.stringify(dataShare))
   }
 
   return (
@@ -95,8 +104,8 @@ function Categories() {
                 {
                   item.allVideos?.length>0 &&
                   item.allVideos?.map(video=>(
-                    <div key={video?.id} className='col-lg-6'>
-                      <VideoCard displayData={video}/>
+                    <div draggable={true} onDragStart={e=>videoDragStarted(e,video,item.id)} key={video?.id} className='col-lg-6'>
+                      <VideoCard displayData={video} insideCategory={true}/>
                     </div>
                   ))
                 }

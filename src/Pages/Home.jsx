@@ -8,6 +8,7 @@ import Categories from '../Components/Categories'
 
 function Home() {
   const [addVideoResponse,setAddVideoResponse] = useState()
+  const [removeCategoryVideoResponse,setRemoveCategoryVideoResponse] = useState("")
   return (
     <>
       <div className="container my-5 d-flex  justify-content-between ">
@@ -17,10 +18,10 @@ function Home() {
       <div className='container-fluid my-5 row'>
         <div className="col-lg-6">
           <h3>All Videos</h3>
-          <View addVideoResponse={addVideoResponse}/>
+          <View addVideoResponse={addVideoResponse} removeCategoryVideoResponse={removeCategoryVideoResponse}/>
         </div>
         <div className="col-lg-6">
-          <Categories/>
+          <Categories setRemoveCategoryVideoResponse={setRemoveCategoryVideoResponse}/>
         </div>
       </div>
     </>
