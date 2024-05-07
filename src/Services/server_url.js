@@ -1,3 +1,3 @@
-const Server_URL ="http://localhost:3000"
+const Server_URL ="https://mp-server-gdcj.onrender.com"
 
 export default Server_URL
